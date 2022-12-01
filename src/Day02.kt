@@ -4,9 +4,9 @@ fun main() {
 
     fun part2(input: Sequence<String>): Int = 2
 
-    go(::part1, 1, TEST)
+    test(::part1, 1)
     go(::part1, 1)
 
-    go(::part2, 2, TEST)
+    test(::part2, 2)
     go(::part2, 2)
 }

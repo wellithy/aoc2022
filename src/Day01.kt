@@ -14,9 +14,9 @@ fun main() {
 
     fun part2(input: Sequence<String>): Int = input.toCalories().top(3).sum()
 
-    go(::part1, 24000, TEST)
+    test(::part1, 24000)
     go(::part1, 71471)
 
-    go(::part2, 45000, TEST)
+    test(::part2, 45000)
     go(::part2, 211189)
 }
