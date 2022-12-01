@@ -6,7 +6,7 @@ import kotlin.io.path.readLines
 /**
  * Reads lines from the given input txt file.
  */
-val srcRoot = Path("src")
+val srcRoot = Path("src").resolve("txt")
 fun readInput(name: String) = srcRoot.resolve("$name.txt").readLines()
 
 fun ByteArray.hex(): String = BigInteger(1, this).toString(16)

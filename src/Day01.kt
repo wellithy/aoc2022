@@ -28,7 +28,7 @@ fun main() {
     check(part1(input) == 71471)
 
     check(part2(testInput) == 45000)
-    println(part2(input))
+    check(part2(input) == 211189)
 }
 
 class Elf(list: List<String>) {
