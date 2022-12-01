@@ -1,5 +1,3 @@
-import kotlin.io.path.useLines
-
 fun main() {
     fun Sequence<String>.toCalories(): Sequence<Int> = sequence {
         var calories = 0

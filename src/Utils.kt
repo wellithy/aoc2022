@@ -17,6 +17,6 @@ fun <T> Sequence<T>.top(n: Int): PriorityQueue<T> = PriorityQueue<T>(n + 1).also
 }
 
 
-private val textRoot = Path("src").resolve("txt")
+private val textRoot = Path("src").resolve(".txt")
 private fun String.textPath(extension: String): Path = textRoot.resolve("$this.$extension")
 private fun callerName(): String = Exception().stackTrace[3].className.run { substring(0, length - 2) }
