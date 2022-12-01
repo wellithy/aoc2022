@@ -1,24 +1,25 @@
+import java.util.Comparator
+import java.util.PriorityQueue
+
 fun main() {
-    fun List<String>.toElves(): List<Elf> = mutableListOf<Elf>().also {
-        var start = 0
-        forEachIndexed { index, line ->
-            if (line.isEmpty()) {
-                it += Elf(subList(start, index))
-                start = index + 1
-            }
+    fun List<String>.toCalories(): List<Int> = mutableListOf<Int>().also { calories ->
+        var calory = 0
+        forEach {
+            if (it.isEmpty()) {
+                calories += calory
+                calory = 0
+            } else
+                calory += it.toInt()
         }
-        it += Elf(subList(start, size))
+        calories += calory
     }
 
-    fun part1(input: List<String>): Int = input.toElves().maxOf(Elf::calories)
+    fun part1(input: List<String>): Int = input.toCalories().max()
 
     fun part2(input: List<String>): Int = input
-        .toElves()
-        .mapTo(mutableListOf(), Elf::calories)
-        .let {
-            it.sortDescending()
-            it.subList(0, 3).sum()
-        }
+        .toCalories()
+        .sortedDescending()
+        .subList(0, 3).sum()
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day01_test")
@@ -29,8 +30,4 @@ fun main() {
 
     check(part2(testInput) == 45000)
     check(part2(input) == 211189)
-}
-
-class Elf(list: List<String>) {
-    val calories: Int = list.sumOf(String::toInt)
 }
