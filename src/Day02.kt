@@ -27,17 +27,19 @@ private val Shape.defeats: Shape
         Scissors -> Paper
     }
 
-private fun Shape.result(other: Shape): Result = when (this) {
-    other -> Draw
-    other.defeats -> Lost
-    else -> Won
+private fun Shape.result(other: Shape): Result = when (other) {
+    defeats -> Won
+    this -> Draw
+    else -> Lost
 }
 
-private val defeatedBy = Shape.values().associateBy(Shape::defeats)
+private val defeated = Shape.values().associateBy(Shape::defeats)
+
+private val Shape.defeatedBy: Shape get() = defeated.getValue(this)
 private fun Result.of(other: Shape): Shape = when (this) {
-    Draw -> other
     Lost -> other.defeats
-    Won -> defeatedBy.getValue(other)
+    Draw -> other
+    Won -> other.defeatedBy
 }
 
 private val Symbol.strategy1: Shape
