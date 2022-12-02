@@ -1,22 +1,64 @@
+import Shape.*
+import Symbol.*
+import Result.*
+
+private enum class Symbol { X, Y, Z }
+private enum class Result { Lost, Draw, Won }
+private enum class Shape { Rock, Paper, Scissors }
+
+private val Result.score: Int
+    get() = when (this) {
+        Lost -> 0
+        Draw -> 3
+        Won -> 6
+    }
+
+
 fun main() {
+    val shapes = mapOf("A" to Rock, "B" to Paper, "C" to Scissors)
+    val symbols = Symbol.values().associateBy(Symbol::name)
+
 
     fun Sequence<String>.parse(): Sequence<Pair<Shape, Symbol>> = sequence {
         forEach { line ->
-            yield(line.split(" ").let { Shape.lookup(it[0]) to Symbol.lookup(it[1]) })
+            yield(line.split(" ").let { shapes.getValue(it[0]) to symbols.getValue(it[1]) })
         }
     }
 
+    fun Shape.score(): Int = when (this) {
+        Rock -> 1
+        Paper -> 2
+        Scissors -> 3
+    }
+
+    val defeats = mapOf(Rock to Scissors, Paper to Rock, Scissors to Paper)
+    val defeatedBy = defeats.asSequence().map { it.value to it.key }.toMap()
+
+    fun Shape.result(other: Shape): Result = when {
+        this == other -> Draw
+        this == defeatedBy[other] -> Won
+        else -> Lost
+    }
+
     fun part1(input: Sequence<String>): Int {
-        val strategy = mapOf(Symbol.Y to Shape.Paper, Symbol.X to Shape.Rock, Symbol.Z to Shape.Scissors)
+        val strategy = mapOf(Y to Paper, X to Rock, Z to Scissors)
         return input.parse().map { (other, self) ->
-            strategy.getValue(self).run { score + result(other).score }
+            strategy.getValue(self).run { score() + result(other).score }
         }.sum()
     }
 
+
+    fun Shape.toHave(result: Result): Shape = when (result) {
+        Draw -> this
+        Lost -> defeats.getValue(this)
+        else -> defeatedBy.getValue(this)
+    }
+
+
     fun part2(input: Sequence<String>): Int {
-        val strategy = mapOf(Symbol.Y to Result.Draw, Symbol.X to Result.Lost, Symbol.Z to Result.Won)
+        val strategy = mapOf(Y to Draw, X to Lost, Z to Won)
         return input.parse().map { (other, self) ->
-            strategy.getValue(self).run { score + other.toHave(this).score }
+            strategy.getValue(self).run { score + other.toHave(this).score() }
         }.sum()
     }
 
@@ -26,48 +68,5 @@ fun main() {
     test(::part2, 12)
     go(::part2, 13187)
 
-}
-
-
-private enum class Symbol {
-    X, Y, Z;
-
-    companion object {
-        val names = values().associateBy(Symbol::name)
-        fun lookup(str: String): Symbol = names.getValue(str)
-    }
-}
-
-private enum class Result(val score: Int) {
-    Lost(0), Draw(3), Won(6)
-}
-
-private enum class Shape(val score: Int, val sym: String) {
-    Rock(1, "A"),
-    Paper(2, "B"),
-    Scissors(3, "C"),
-    ;
-
-    companion object {
-        val names = values().associateBy(Shape::sym)
-        fun lookup(str: String): Shape = names.getValue(str)
-
-        val defatedBy = mapOf(Scissors to Rock, Rock to Paper, Paper to Scissors)
-
-        val defates = defatedBy.asSequence().map { it.value to it.key }.toMap()
-    }
-
-    fun toHave(result: Result): Shape = when (result) {
-        Result.Draw -> this
-        Result.Lost -> defates.getValue(this)
-        else -> defatedBy.getValue(this)
-    }
-
-    fun result(other: Shape): Result = when {
-        this == other -> Result.Draw
-        this == defatedBy[other] -> Result.Won
-        else -> Result.Lost
-    }
 
 }
-
