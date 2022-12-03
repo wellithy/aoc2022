@@ -5,46 +5,57 @@ import day02.Result.*
 import day02.Hand.*
 import day02.Symbol.*
 
-enum class Hand { Rock, Paper, Scissors }
-enum class Symbol { X, Y, Z }
-enum class Result { Lost, Draw, Won }
+enum class Hand(val score: Int, val symbol: String) {
+    Rock(1, "A"),
+    Paper(2, "B"),
+    Scissors(3, "C"),
+    ;
 
-val Result.score: Int
-    get() = when (this) {
-        Lost -> 0
-        Draw -> 3
-        Won -> 6
+    val defeats: Hand
+        get() = when (this) {
+            Rock -> Scissors
+            Paper -> Rock
+            Scissors -> Paper
+        }
+
+    fun result(other: Hand): Result = when (other) {
+        defeats -> Won
+        this -> Draw
+        else -> Lost
     }
 
-val Hand.score: Int
-    get() = when (this) {
-        Rock -> 1
-        Paper -> 2
-        Scissors -> 3
+    companion object {
+        val hands = values().associateBy(Hand::symbol)
+        fun of(symbol: String): Hand = hands.getValue(symbol)
+        val defeated = values().associateBy(Hand::defeats)
     }
 
-val Hand.defeats: Hand
-    get() = when (this) {
-        Rock -> Scissors
-        Paper -> Rock
-        Scissors -> Paper
-    }
+    val defeatedBy: Hand get() = defeated.getValue(this)
 
-fun Hand.result(other: Hand): Result = when (other) {
-    defeats -> Won
-    this -> Draw
-    else -> Lost
 }
 
-val defeated = Hand.values().associateBy(Hand::defeats)
+enum class Symbol {
+    X, Y, Z;
 
-val Hand.defeatedBy: Hand get() = defeated.getValue(this)
-fun Result.of(other: Hand): Hand = when (this) {
-    Lost -> other.defeats
-    Draw -> other
-    Won -> other.defeatedBy
+    companion object {
+        val symbols = values().associateBy(Symbol::name)
+        fun of(symbol: String): Symbol = symbols.getValue(symbol)
+    }
 }
 
+enum class Result(val score: Int) {
+    Lost(0),
+    Draw(3),
+    Won(6)
+}
+
+fun Sequence<String>.parse(): Sequence<Pair<Hand, Symbol>> = sequence {
+    forEach { line ->
+        yield(line.split(" ").let { Hand.of(it[0]) to Symbol.of(it[1]) })
+    }
+}
+
+fun Hand.score(other: Hand): Int = score + result(other).score
 val Symbol.strategy1: Hand
     get() = when (this) {
         X -> Rock
@@ -52,30 +63,25 @@ val Symbol.strategy1: Hand
         Z -> Scissors
     }
 
+fun part1(input: Sequence<String>): Int = input.parse().map { (other, self) -> self.strategy1.score(other) }.sum()
+
+
 val Symbol.strategy2: Result
     get() = when (this) {
         X -> Lost
         Y -> Draw
         Z -> Won
     }
-val shapes = mapOf("A" to Rock, "B" to Paper, "C" to Scissors)
-val symbols = Symbol.values().associateBy(Symbol::name)
 
-
-fun Sequence<String>.parse(): Sequence<Pair<Hand, Symbol>> = sequence {
-    forEach { line ->
-        yield(line.split(" ").let { shapes.getValue(it[0]) to symbols.getValue(it[1]) })
-    }
+fun Result.of(other: Hand): Hand = when (this) {
+    Lost -> other.defeats
+    Draw -> other
+    Won -> other.defeatedBy
 }
 
-fun part1(input: Sequence<String>): Int = input.parse().map { (other, self) ->
-    self.strategy1.run { score + result(other).score }
-}.sum()
+fun Result.score(other: Hand): Int = score + of(other).score
 
-
-fun part2(input: Sequence<String>): Int = input.parse().map { (other, self) ->
-    self.strategy2.run { score + of(other).score }
-}.sum()
+fun part2(input: Sequence<String>): Int = input.parse().map { (other, self) -> self.strategy2.score(other) }.sum()
 
 fun main() {
 

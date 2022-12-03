@@ -4,7 +4,7 @@ import util.*
 
 typealias Item = Char
 typealias Rucksack = String
-typealias Group = List<String>
+typealias Group = List<Rucksack>
 
 fun Item.priority(): Int =
     when (this) {
@@ -13,17 +13,17 @@ fun Item.priority(): Int =
         else -> error("")
     }
 
-fun List<String>.common(): Char =
-    asSequence().map(String::toSet).reduce { acc, s -> acc intersect s }.single()
+fun Group.priority(): Int =
+    map(String::toSet).reduce { acc, s -> acc intersect s }.single().priority()
 
-fun Rucksack.common(): Item =
-    listOf(substring(0, length / 2), substring(length / 2)).common()
+fun Rucksack.priority(): Int =
+    listOf(substring(0, length / 2), substring(length / 2)).priority()
 
 fun part1(input: Sequence<String>): Int =
-    input.map(Rucksack::common).sumOf(Item::priority)
+    input.map(Rucksack::priority).sum()
 
 fun part2(input: Sequence<String>): Int =
-    input.chunked(3).map(Group::common).sumOf(Item::priority)
+    input.chunked(3).map(Group::priority).sum()
 
 fun main() {
 
