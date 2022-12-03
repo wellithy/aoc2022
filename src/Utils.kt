@@ -1,3 +1,5 @@
+package util
+
 import java.nio.file.Path
 import java.util.*
 import kotlin.io.path.Path
@@ -22,4 +24,4 @@ private fun <T> go(block: (Sequence<String>) -> T?, expected: T?, path: Path): T
     }
 
 private val textRoot = Path(".txt")
-private fun callerName(): String = Throwable().stackTrace[3].className.run { substring(0, length - 2) }
+private fun callerName(): String = Throwable().stackTrace[3].className.run { substring(6, length - 2) }
