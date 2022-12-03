@@ -22,4 +22,4 @@ private fun <T> go(block: (Sequence<String>) -> T?, expected: T?, path: Path): T
     }
 
 private val textRoot = Path(".txt")
-private fun callerName(): String = Exception().stackTrace[3].className.run { substring(0, length - 2) }
+private fun callerName(): String = Throwable().stackTrace[3].className.run { substring(0, length - 2) }

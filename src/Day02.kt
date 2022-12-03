@@ -1,55 +1,55 @@
 import Result.*
-import Shape.*
+import Hand.*
 import Symbol.*
 
-private enum class Shape { Rock, Paper, Scissors }
-private enum class Symbol { X, Y, Z }
-private enum class Result { Lost, Draw, Won }
+internal enum class Hand { Rock, Paper, Scissors }
+internal enum class Symbol { X, Y, Z }
+internal enum class Result { Lost, Draw, Won }
 
-private val Result.score: Int
+internal val Result.score: Int
     get() = when (this) {
         Lost -> 0
         Draw -> 3
         Won -> 6
     }
 
-private val Shape.score: Int
+internal val Hand.score: Int
     get() = when (this) {
         Rock -> 1
         Paper -> 2
         Scissors -> 3
     }
 
-private val Shape.defeats: Shape
+internal val Hand.defeats: Hand
     get() = when (this) {
         Rock -> Scissors
         Paper -> Rock
         Scissors -> Paper
     }
 
-private fun Shape.result(other: Shape): Result = when (other) {
+internal fun Hand.result(other: Hand): Result = when (other) {
     defeats -> Won
     this -> Draw
     else -> Lost
 }
 
-private val defeated = Shape.values().associateBy(Shape::defeats)
+internal val defeated = Hand.values().associateBy(Hand::defeats)
 
-private val Shape.defeatedBy: Shape get() = defeated.getValue(this)
-private fun Result.of(other: Shape): Shape = when (this) {
+internal val Hand.defeatedBy: Hand get() = defeated.getValue(this)
+internal fun Result.of(other: Hand): Hand = when (this) {
     Lost -> other.defeats
     Draw -> other
     Won -> other.defeatedBy
 }
 
-private val Symbol.strategy1: Shape
+internal val Symbol.strategy1: Hand
     get() = when (this) {
         X -> Rock
         Y -> Paper
         Z -> Scissors
     }
 
-private val Symbol.strategy2: Result
+internal val Symbol.strategy2: Result
     get() = when (this) {
         X -> Lost
         Y -> Draw
@@ -61,7 +61,7 @@ fun main() {
     val symbols = Symbol.values().associateBy(Symbol::name)
 
 
-    fun Sequence<String>.parse(): Sequence<Pair<Shape, Symbol>> = sequence {
+    fun Sequence<String>.parse(): Sequence<Pair<Hand, Symbol>> = sequence {
         forEach { line ->
             yield(line.split(" ").let { shapes.getValue(it[0]) to symbols.getValue(it[1]) })
         }
