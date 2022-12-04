@@ -14,7 +14,7 @@ fun Item.priority(): Int =
     }
 
 fun Group.priority(): Int =
-    map(String::toSet).reduce { acc, s -> acc intersect s }.single().priority()
+    map(Rucksack::toSet).reduce { acc, s -> acc intersect s }.single().priority()
 
 fun Rucksack.priority(): Int =
     listOf(substring(0, length / 2), substring(length / 2)).priority()
