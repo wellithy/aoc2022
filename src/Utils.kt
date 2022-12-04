@@ -5,10 +5,10 @@ import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.useLines
 
-fun <T> go(block: (Sequence<String>) -> T?, expected: T?): T? =
+fun <T> go(block: (Sequence<String>) -> T, expected: T) =
     go(block, expected, textRoot.resolve("${callerName()}.txt"))
 
-fun <T> test(block: (Sequence<String>) -> T?, expected: T?): T? =
+fun <T> test(block: (Sequence<String>) -> T, expected: T) =
     go(block, expected, textRoot.resolve("${callerName()}_test.txt"))
 
 fun <T> Sequence<T>.top(n: Int): PriorityQueue<T> = PriorityQueue<T>(n + 1).also { pq ->
