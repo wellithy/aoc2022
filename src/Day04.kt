@@ -2,29 +2,39 @@ package day04
 
 import util.*
 
-typealias Assignment = IntRange
-typealias ElfPair = Pair<Assignment, Assignment>
+@JvmInline
+value class Elf(private val assignment: IntRange) {
+    infix fun contained(other: Elf): Boolean =
+        assignment.first in other.assignment && assignment.last in other.assignment
 
-infix fun Assignment.contained(other: Assignment): Boolean =
-    first in other && endInclusive in other
+    infix fun overlaps(other: Elf): Boolean =
+        assignment.first in other.assignment || assignment.last in other.assignment
 
-infix fun Assignment.overlaps(other: Assignment): Boolean =
-    first in other || endInclusive in other
+    companion object {
+        fun of(str: String): Elf =
+            str.split('-').map { it.toInt() }.let { (first, last) -> Elf(IntRange(first, last)) }
 
-fun ElfPair.totalOverlap(): Boolean =
-    first contained second || second contained first
+    }
 
-fun ElfPair.overlap(): Boolean =
-    first overlaps second || second overlaps first
+}
 
-fun String.toAssignment(): Assignment =
-    split('-').let { IntRange(it[0].toInt(), it[1].toInt()) }
+@JvmInline
+value class ElfPair(private val pair: Pair<Elf, Elf>) {
+    fun totalOverlap(): Boolean =
+        pair.first contained pair.second || pair.second contained pair.first
 
-fun String.toElfPair(): ElfPair =
-    split(',').let { it[0].toAssignment() to it[1].toAssignment() }
+    fun overlap(): Boolean =
+        pair.first overlaps pair.second || pair.second overlaps pair.first
+
+    companion object {
+        fun of(str: String): ElfPair =
+            str.split(',').map { Elf.of(it) }.let { (first, second) -> ElfPair(first to second) }
+    }
+
+}
 
 fun Sequence<String>.solve(by: ElfPair.() -> Boolean): Int =
-    count { it.toElfPair().by() }
+    count { ElfPair.of(it).by() }
 
 fun part1(input: Sequence<String>): Int = input.solve(ElfPair::totalOverlap)
 
